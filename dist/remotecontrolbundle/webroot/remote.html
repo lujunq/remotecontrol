@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+	<meta charset="utf-8" />
+	<script type="text/javascript" src="config.js"></script>
+	<title>Controle remoto</title>
+	<script type="text/javascript" language="javascript">
+	
+	var wsconn;
+	
+	function wsOnOpen() {
+	}
+	
+	function wsOnMessage(evt) {
+		var received_msg = evt.data;
+		alert("Message is received: " + received_msg);
+	}
+	
+	function wsOnClose() {
+	}
+	
+	function wsSend(message) {
+		wsconn.send(message);
+	}
+	
+	function wsSendObject(obj) {
+		wsconn.send(JSON.stringify(obj));
+	}
+	
+	function openWebSocket() {
+		if ("WebSocket" in window) {
+			wsconn = new WebSocket(webSocketAddress);
+			wsconn.onopen = wsOnOpen;
+			wsconn.onmessage = wsOnMessage;
+			wsconn.onclose = wsOnClose;
+		} else {
+			alert("WebSocket NOT supported by your Browser!");
+		}
+	}
+	
+	function sendClick() {
+		wsSend('clique');
+	}
+	</script>
+	</head>
+	<body onload="javascript:openWebSocket();">
+    <p>O controle remoto está aqui!<br />&nbsp;<br /></p>
+    <div onClick="javascript:sendClick();" style="font-size:30px; cursor:pointer; text-align:center; width:100%;">toque aqui</div>
+</body>
+</html>
