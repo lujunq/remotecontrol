@@ -6,6 +6,8 @@ package {
 	import art.ciclope.net.JSONTCPServer;
 	import art.ciclope.net.WebSocketsServer;
 	import flash.display.StageDisplayState;
+	import flash.net.Socket;
+	import paradoxo.TabletData;
 	
 	import flash.desktop.NativeApplication;
 	import flash.events.Event;
@@ -28,12 +30,16 @@ package {
 		private const DESIGNWIDTH:uint = 1280;
 		private const DESIGNHEIGHT:uint = 720;
 		private const TCPPORT:uint = 8765;
+		private const NUMTABLETS:uint = 4;
 		
 		private var _webroot:WEBROOTManager;
 		private var _tcpServer:JSONTCPServer;
 		private var _qrCode:QRCodeDisplay;
 		private var _webServer:HTTPServer;
 		private var _webSocket:WebSocketsServer;
+		
+		private var _tablets:Vector.<TabletData>;
+		private var _currentID:int;
 		
 		
 		public function Main():void {
@@ -48,6 +54,13 @@ package {
 			// prepare webroot files
 			this._webroot = new WEBROOTManager('webroot', false);
 			this._webroot.addEventListener(Event.COMPLETE, onWebrootComplete);
+			
+			// prepare system
+			this._tablets = new Vector.<TabletData>();
+			for (var index:uint = 0; index < this.NUMTABLETS; index++) {
+				this._tablets.push(new TabletData(index));
+			}
+			this._currentID = 0;
 		}
 		
 		private function onWebrootComplete(evt:Event):void {
@@ -94,7 +107,9 @@ package {
 		}
 		
 		private function onJSONMessage(evt:TCPDataEvent):void {
-			this._tcpServer.sendJSONToClient(evt.messageData, evt.client);
+			if (!this.processMessage(evt.messageData, evt.client)) {
+				this._tcpServer.sendJSONToClient(evt.messageData, evt.client);
+			}
 		}
 		
 		private function onWebSocketsReceived(evt:TCPDataEvent):void {
@@ -105,6 +120,76 @@ package {
 			// NativeApplication.nativeApplication.exit();
 		}
 		
+		private function processMessage(message:Object, client:Socket):Boolean {
+			var ret:Boolean = false;
+			
+			if (message.ac != null) {
+				var resposta:Object;
+				var i:uint;
+				var to:int;
+				switch (String(message.ac)) {
+					case 'hi':
+						if (message.numero != null) {
+							var numero:int = int(message.numero);
+							if ((numero >= 0) && (numero < this.NUMTABLETS)) {
+								this._tablets[numero].socket = client;
+								this._tablets[numero].ready = true;
+								ret = true;
+							}
+						}
+						break;
+					case 'newid':
+						resposta.ac = "objid";
+						resposta.numero = int(this._currentID);
+						this._tcpServer.sendJSONToClient(resposta, client);
+						this._currentID++;
+						ret = true;
+						break;
+					case 'resend':
+						if (message.tablet != null) {
+							to = int (message.tablet);
+							if (to < this.NUMTABLETS) {
+								if (this._tablets[to].ready) {
+									this._tcpServer.sendJSONToClient(message, this._tablets[to].socket);
+									ret = true;
+								}
+							} else {
+								for (i = 0; i < this.NUMTABLETS; i++) {
+									if (this._tablets[i].socket != client) {
+										this._tcpServer.sendJSONToClient(message, this._tablets[i].socket);
+									}
+								}
+								ret = true;
+							}
+						}
+						break;
+					case 'resetids':
+						this._currentID = 0;
+						ret = true;
+						break;
+					case 'objeto':
+						if (message.para != null) {
+							to = int (message.para);
+							if (to < this.NUMTABLETS) {
+								if (this._tablets[to].ready) {
+									this._tcpServer.sendJSONToClient(message, this._tablets[to].socket);
+									ret = true;
+								}
+							} else {
+								for (i = 0; i < this.NUMTABLETS; i++) {
+									if (this._tablets[i].socket != client) {
+										this._tcpServer.sendJSONToClient(message, this._tablets[i].socket);
+									}
+								}
+								ret = true;
+							}
+						}
+						break;
+				}
+			}
+			
+			return (ret);
+		}
 	}
 	
 }
