@@ -102,13 +102,13 @@ package {
 			// show connection address using qr code
 			this._qrCode = new QRCodeDisplay();
 			Main.content.addChild(this._qrCode);
-			this._qrCode.setCode(this._webServer.serverAddress(this._tcpServer.serverActiveIPv4[0]) + '/remote.html');
+			this._qrCode.setCode(this._webServer.serverAddress(this._tcpServer.serverActiveIPv4[0]) + '/index.html');
 			trace(this._qrCode.code);
 		}
 		
 		private function onJSONMessage(evt:TCPDataEvent):void {
 			if (!this.processMessage(evt.messageData, evt.client)) {
-				this._tcpServer.sendJSONToClient(evt.messageData, evt.client);
+				this._tcpServer.sendJSONToClient({ "ac":"erro", "original":evt.messageData.ac }, evt.client);
 			}
 		}
 		
@@ -122,7 +122,6 @@ package {
 		
 		private function processMessage(message:Object, client:Socket):Boolean {
 			var ret:Boolean = false;
-			
 			if (message.ac != null) {
 				var resposta:Object;
 				var i:uint;
