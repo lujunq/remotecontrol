@@ -1,4 +1,7 @@
 package {
+	import art.ciclope.data.PersistentData;
+	import art.ciclope.device.SerproxyArduino;
+	import art.ciclope.device.SerproxyArduinoEvent;
 	import art.ciclope.display.QRCodeDisplay;
 	import art.ciclope.event.TCPDataEvent;
 	import art.ciclope.handle.WEBROOTManager;
@@ -24,6 +27,9 @@ package {
 	public class Main extends Sprite {
 		
 		public static var content:Sprite;
+		public static var config:PersistentData;
+		
+		public static const DEBUG:Boolean = true;
 		
 		private const WEBSERVERPORT:uint = 8080;
 		private const WEBSOCKETPORT:uint = 8087;
@@ -40,13 +46,17 @@ package {
 		
 		private var _tablets:Vector.<TabletData>;
 		private var _currentID:int;
+		private var _arduino:SerproxyArduino;
 		
 		
 		public function Main():void {
 			stage.scaleMode = StageScaleMode.NO_SCALE;
 			stage.align = StageAlign.TOP_LEFT;
 			stage.addEventListener(Event.DEACTIVATE, deactivate);
-			stage.displayState = StageDisplayState.FULL_SCREEN_INTERACTIVE;
+			if (!Main.DEBUG) stage.displayState = StageDisplayState.FULL_SCREEN_INTERACTIVE;
+			
+			// config
+			Main.config = new PersistentData('remotecontrol', 'config');
 			
 			// touch or gesture?
 			Multitouch.inputMode = MultitouchInputMode.TOUCH_POINT;
@@ -61,6 +71,18 @@ package {
 				this._tablets.push(new TabletData(index));
 			}
 			this._currentID = 0;
+			
+			// configuration
+			if (!Main.config.isSet('arduinocom')) Main.config.setValue('arduinocom', '4');
+			if (!Main.config.isSet('arduinoport')) Main.config.setValue('arduinoport', '10014');
+			if (!Main.config.isSet('arduinobaud')) Main.config.setValue('arduinobaud', '9600');
+			
+			// arduino
+			this._arduino = new SerproxyArduino();
+			this._arduino.restartOnExit = true;
+			this._arduino.addEventListener(SerproxyArduinoEvent.DATARECEIVED, onSPData);
+			this._arduino.addArduino(uint(Main.config.getValue('arduinocom')), uint(Main.config.getValue('arduinoport')), uint(Main.config.getValue('arduinobaud')));
+			this._arduino.start();
 		}
 		
 		private function onWebrootComplete(evt:Event):void {
@@ -188,6 +210,16 @@ package {
 			}
 			
 			return (ret);
+		}
+		private function sendToArduino(message:String):void {
+			if (this._arduino != null) this._arduino.sendToArduino(uint(Main.config.getValue('arduinocom')), message);
+		}
+		
+		private function onSPData(evt:SerproxyArduinoEvent):void {
+			switch (evt.info) {
+				default:
+					break;
+			}
 		}
 	}
 	

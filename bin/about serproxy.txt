@@ -1,0 +1,7 @@
+Serproxy is a multi-threaded proxy program for redirecting network socket connections to/from serial links, in cases where the remote end of the serial link doesn't have a TCP/IP stack (eg an embedded or microcontroller system). The proxy allows other hosts on the network to communicate with the system on the remote end of the serial link. The Linux version requires a recent version of libpthread to compile/run. 
+
+Serproxy is distributed under the GPL license. The source code and pre-complied packages can be found at:
+http://www.lspace.nildram.co.uk/freeware.html
+
+You should have received a copy of the GNU GPL license with this package. If you didn't, you can get a copy at
+https://gnu.org/licenses/gpl-3.0.txt

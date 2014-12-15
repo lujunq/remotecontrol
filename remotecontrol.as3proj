@@ -6,8 +6,8 @@
     <movie input="" />
     <movie path="bin\remotecontrol.swf" />
     <movie fps="30" />
-    <movie width="480" />
-    <movie height="762" />
+    <movie width="960" />
+    <movie height="540" />
     <movie version="14" />
     <movie minorVersion="0" />
     <movie platform="AIR Mobile" />
