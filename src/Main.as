@@ -124,7 +124,7 @@ package {
 			// show connection address using qr code
 			this._qrCode = new QRCodeDisplay();
 			Main.content.addChild(this._qrCode);
-			this._qrCode.setCode(this._webServer.serverAddress(this._tcpServer.serverActiveIPv4[0]) + '/index.html');
+			this._qrCode.setCode(this._webServer.serverAddress(this._tcpServer.serverActiveIPv4[0]) + '/abelhas/abelha.html');
 			trace(this._qrCode.code);
 		}
 		
@@ -135,7 +135,18 @@ package {
 		}
 		
 		private function onWebSocketsReceived(evt:TCPDataEvent):void {
-			
+			if (evt.messageData != null) {
+				if (evt.messageData.ac != null) {
+					switch (String(evt.messageData.ac)) {
+						case 'bee':
+							var pos:uint = uint(Math.round(100 * Number(evt.messageData.height) / Number(evt.messageData.total)));
+							if (this._tablets[0].ready) {
+								this._tcpServer.sendJSONToClient( { 'ac':'abelha', 'altura': pos }, this._tablets[0].socket);
+							}
+							break;
+					}
+				}
+			}
 		}
 		
 		private function deactivate(e:Event):void {
@@ -145,7 +156,7 @@ package {
 		private function processMessage(message:Object, client:Socket):Boolean {
 			var ret:Boolean = false;
 			if (message.ac != null) {
-				var resposta:Object;
+				var resposta:Object = new Object();
 				var i:uint;
 				var to:int;
 				switch (String(message.ac)) {
