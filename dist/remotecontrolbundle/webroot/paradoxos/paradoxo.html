@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<style type="text/css">
+  h1 {
+	  font-family: Arial, Helvetica, sans-serif;
+	  color: #F00;
+	  font-size: x-large;
+  }
+  p {
+	  font-family: Arial, Helvetica, sans-serif;
+	  color: #000;
+	  font-size: small;
+  }
+  body {
+	  background-color: #000;
+  }
+  #bloctxt {
+	  border-left-width: 5px;
+	  border-left-style: solid;
+	  border-left-color: #F00;
+	  padding-left: 10px;
+	  position: absolute;
+	  left: 50%%;
+	  width: 600px;
+	  margin-left: -260px
+  }
+</style>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+  <meta name="viewport" content="initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, target-densitydpi=device-dpi" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+  <meta name="HandheldFriendly" content="true" />
+  <title>Paradox.os</title>
+	<script>
+	    if (!document.createElement("canvas").getContext) {
+			document.write('<div id="bloctxt">');
+			document.write('<h1>O controle remoto não foi iniciado corretamente</h1>');
+			document.write('<p>Desculpe, seu navegador não é compatível com nosso controle remoto. Tente apps alternativos como o Mozilla Firefox ou o Google Chrome.</p>');
+			document.write('</div>');
+			throw new error("Cannot run application");
+		}
+	</script>
+    <script type="text/javascript" src="../config.js"></script>
+    <script type="text/javascript" src="../funcoes.js"></script>
+    <script src="src/Runtime.js"></script>
+  <script>
+	if (window.location.protocol == "file:") {
+		document.write('<div id="bloctxt">');
+		document.write('<h1>O controle remoto não foi iniciado corretamente</h1>');
+		document.write('<p>Desculpe, seu navegador não é compatível com nosso controle remoto. Tente apps alternativos como o Mozilla Firefox ou o Google Chrome.</p>');
+		document.write('</div>');
+		throw new error("Cannot run application");
+	}
+  </script>
+</head>
+<body  onload="javascript:openWebSocket();">
+  <div>
+    <div style="position:absolute; top:0px; left:0px; -webkit-user-select: none;">
+    <canvas id="MMFCanvas" width="640" height="960">
+    	Desculpe, seu navegador não é compatível com nosso controle remoto. Tente apps alternativos como o Mozilla Firefox ou o Google Chrome.
+    </canvas>    
+    </div>
+  </div>
+<script>
+    window.addEventListener("load", windowLoaded, false);
+    function windowLoaded() {
+        new Runtime("MMFCanvas", "resources/Paradoxo.cch");
+    }
+</script>
+</body>
+</html>

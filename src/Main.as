@@ -124,7 +124,8 @@ package {
 			// show connection address using qr code
 			this._qrCode = new QRCodeDisplay();
 			Main.content.addChild(this._qrCode);
-			this._qrCode.setCode(this._webServer.serverAddress(this._tcpServer.serverActiveIPv4[0]) + '/abelhas/abelha.html');
+			//this._qrCode.setCode(this._webServer.serverAddress(this._tcpServer.serverActiveIPv4[0]) + '/abelhas/abelha.html');
+			this._qrCode.setCode(this._webServer.serverAddress(this._tcpServer.serverActiveIPv4[0]) + '/paradoxos/paradoxo.html');
 			trace(this._qrCode.code);
 		}
 		
@@ -137,11 +138,110 @@ package {
 		private function onWebSocketsReceived(evt:TCPDataEvent):void {
 			if (evt.messageData != null) {
 				if (evt.messageData.ac != null) {
+					var level:int;
+					var thescreen:int;
+					var i:uint;
 					switch (String(evt.messageData.ac)) {
 						case 'bee':
-							var pos:uint = uint(Math.round(100 * Number(evt.messageData.height) / Number(evt.messageData.total)));
+							level = int(Math.round(100 * Number(evt.messageData.height) / Number(evt.messageData.total)));
 							if (this._tablets[0].ready) {
-								this._tcpServer.sendJSONToClient( { 'ac':'abelha', 'altura': pos }, this._tablets[0].socket);
+								this._tcpServer.sendJSONToClient( { 'ac':'abelha', 'altura': level }, this._tablets[0].socket);
+							}
+							break;
+						case 'setzoom':
+							level = int(Math.round(100 * (Number(evt.messageData.pos) - 10) / (Number(evt.messageData.total) - 10)));
+							if (level < 0) level = 0;
+								else if (level > 100) level = 100;
+							thescreen = int(evt.messageData.thescreen);
+							if ((thescreen >= 0) && (thescreen <= 3)) {
+								if (this._tablets[thescreen].ready) {
+									this._tcpServer.sendJSONToClient( { 'ac':'zoom', 'nivel': level }, this._tablets[thescreen].socket);
+								}
+							} else {
+								for (i = 0; i < this.NUMTABLETS; i++) {
+									if (this._tablets[i].ready) {
+										this._tcpServer.sendJSONToClient( { 'ac':'zoom', 'nivel': level }, this._tablets[i].socket);
+									}
+								}
+							}
+							break;
+						case 'setside':
+							level = int(Math.round(100 * (Number(evt.messageData.pos) - 10) / (Number(evt.messageData.total) - 10)));
+							if (level < 0) level = 0;
+								else if (level > 100) level = 100;
+							thescreen = int(evt.messageData.thescreen);
+							if ((thescreen >= 0) && (thescreen <= 3)) {
+								if (this._tablets[thescreen].ready) {
+									this._tcpServer.sendJSONToClient( { 'ac':'side', 'nivel': level }, this._tablets[thescreen].socket);
+								}
+							} else {
+								for (i = 0; i < this.NUMTABLETS; i++) {
+									if (this._tablets[i].ready) {
+										this._tcpServer.sendJSONToClient( { 'ac':'side', 'nivel': level }, this._tablets[i].socket);
+									}
+								}
+							}
+							break;
+						case 'setheight':
+							level = int(Math.round(100 * (Number(evt.messageData.pos) - 10) / (Number(evt.messageData.total) - 10)));
+							if (level < 0) level = 0;
+								else if (level > 100) level = 100;
+							thescreen = int(evt.messageData.thescreen);
+							if ((thescreen >= 0) && (thescreen <= 3)) {
+								if (this._tablets[thescreen].ready) {
+									this._tcpServer.sendJSONToClient( { 'ac':'height', 'nivel': level }, this._tablets[thescreen].socket);
+								}
+							} else {
+								for (i = 0; i < this.NUMTABLETS; i++) {
+									if (this._tablets[i].ready) {
+										this._tcpServer.sendJSONToClient( { 'ac':'height', 'nivel': level }, this._tablets[i].socket);
+									}
+								}
+							}
+							break;
+						case 'setspeed':
+							level = int(Math.round(100 * (Number(evt.messageData.pos) - 10) / (Number(evt.messageData.total) - 10)));
+							if (level < 0) level = 0;
+								else if (level > 100) level = 100;
+							thescreen = int(evt.messageData.thescreen);
+							if ((thescreen >= 0) && (thescreen <= 3)) {
+								if (this._tablets[thescreen].ready) {
+									this._tcpServer.sendJSONToClient( { 'ac':'speed', 'nivel': level }, this._tablets[thescreen].socket);
+								}
+							} else {
+								for (i = 0; i < this.NUMTABLETS; i++) {
+									if (this._tablets[i].ready) {
+										this._tcpServer.sendJSONToClient( { 'ac':'speed', 'nivel': level }, this._tablets[i].socket);
+									}
+								}
+							}
+							break;
+						case 'setfont':
+							thescreen = int(evt.messageData.thescreen);
+							if ((thescreen >= 0) && (thescreen <= 3)) {
+								if (this._tablets[thescreen].ready) {
+									this._tcpServer.sendJSONToClient( { 'ac':'font' }, this._tablets[thescreen].socket);
+								}
+							} else {
+								for (i = 0; i < this.NUMTABLETS; i++) {
+									if (this._tablets[i].ready) {
+										this._tcpServer.sendJSONToClient( { 'ac':'font' }, this._tablets[i].socket);
+									}
+								}
+							}
+							break;
+						case 'setcolor':
+							thescreen = int(evt.messageData.thescreen);
+							if ((thescreen >= 0) && (thescreen <= 3)) {
+								if (this._tablets[thescreen].ready) {
+									this._tcpServer.sendJSONToClient( { 'ac':'color' }, this._tablets[thescreen].socket);
+								}
+							} else {
+								for (i = 0; i < this.NUMTABLETS; i++) {
+									if (this._tablets[i].ready) {
+										this._tcpServer.sendJSONToClient( { 'ac':'color' }, this._tablets[i].socket);
+									}
+								}
 							}
 							break;
 					}

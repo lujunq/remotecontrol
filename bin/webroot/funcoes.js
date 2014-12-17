@@ -43,3 +43,27 @@ function openWebSocket() {
 function sendBee(height, total) {
 	wsSendObject({ "ac":"bee", "height":height, "total":total });
 }
+
+function setZoom(pos, total, thescreen) {
+	wsSendObject({ "ac":"setzoom", "pos":pos, "total":total, "thescreen":thescreen });
+}
+
+function setSide(pos, total, thescreen) {
+	wsSendObject({ "ac":"setside", "pos":pos, "total":total, "thescreen":thescreen });
+}
+
+function setHeight(pos, total, thescreen) {
+	wsSendObject({ "ac":"setheight", "pos":pos, "total":total, "thescreen":thescreen });
+}
+
+function setSpeed(pos, total, thescreen) {
+	wsSendObject({ "ac":"setspeed", "pos":pos, "total":total, "thescreen":thescreen });
+}
+
+function setFont(thescreen) {
+	wsSendObject({ "ac":"setfont", "thescreen":thescreen });
+}
+
+function setColor(thescreen) {
+	wsSendObject({ "ac":"setcolor", "thescreen":thescreen });
+}
