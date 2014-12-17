@@ -328,7 +328,65 @@ package {
 		
 		private function onSPData(evt:SerproxyArduinoEvent):void {
 			switch (evt.info) {
-				default:
+				case 'bt1':
+					if (this._tablets[0].ready) {
+						this._tcpServer.sendJSONToClient( { 'ac':'dentedeleao', 'posicao': 1 }, this._tablets[0].socket);
+					}
+					break;
+				case 'bt2':
+					if (this._tablets[0].ready) {
+						this._tcpServer.sendJSONToClient( { 'ac':'dentedeleao', 'posicao': 2 }, this._tablets[0].socket);
+					}
+					break;
+				case 'bt3':
+					if (this._tablets[0].ready) {
+						this._tcpServer.sendJSONToClient( { 'ac':'dentedeleao', 'posicao': 3 }, this._tablets[0].socket);
+					}
+					break;
+				case 'bt4':
+					if (this._tablets[1].ready) {
+						this._tcpServer.sendJSONToClient( { 'ac':'dentedeleao', 'posicao': 1 }, this._tablets[1].socket);
+					}
+					break;
+				case 'bt5':
+					if (this._tablets[1].ready) {
+						this._tcpServer.sendJSONToClient( { 'ac':'dentedeleao', 'posicao': 2 }, this._tablets[1].socket);
+					}
+					break;
+				case 'bt6':
+					if (this._tablets[1].ready) {
+						this._tcpServer.sendJSONToClient( { 'ac':'dentedeleao', 'posicao': 3 }, this._tablets[1].socket);
+					}
+					break;
+				case 'bt7':
+					if (this._tablets[2].ready) {
+						this._tcpServer.sendJSONToClient( { 'ac':'dentedeleao', 'posicao': 1 }, this._tablets[2].socket);
+					}
+					break;
+				case 'bt8':
+					if (this._tablets[2].ready) {
+						this._tcpServer.sendJSONToClient( { 'ac':'dentedeleao', 'posicao': 2 }, this._tablets[2].socket);
+					}
+					break;
+				case 'bt9':
+					if (this._tablets[2].ready) {
+						this._tcpServer.sendJSONToClient( { 'ac':'dentedeleao', 'posicao': 3 }, this._tablets[2].socket);
+					}
+					break;
+				case 'bt10':
+					if (this._tablets[3].ready) {
+						this._tcpServer.sendJSONToClient( { 'ac':'dentedeleao', 'posicao': 1 }, this._tablets[3].socket);
+					}
+					break;
+				case 'bt11':
+					if (this._tablets[3].ready) {
+						this._tcpServer.sendJSONToClient( { 'ac':'dentedeleao', 'posicao': 2 }, this._tablets[3].socket);
+					}
+					break;
+				case 'bt12':
+					if (this._tablets[3].ready) {
+						this._tcpServer.sendJSONToClient( { 'ac':'dentedeleao', 'posicao': 3 }, this._tablets[3].socket);
+					}
 					break;
 			}
 		}
