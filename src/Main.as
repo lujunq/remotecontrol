@@ -8,8 +8,10 @@ package {
 	import art.ciclope.net.HTTPServer;
 	import art.ciclope.net.JSONTCPServer;
 	import art.ciclope.net.WebSocketsServer;
+	import flash.display.Loader;
 	import flash.display.StageDisplayState;
 	import flash.net.Socket;
+	import flash.net.URLRequest;
 	import paradoxo.TabletData;
 	
 	import flash.desktop.NativeApplication;
@@ -29,7 +31,9 @@ package {
 		public static var content:Sprite;
 		public static var config:PersistentData;
 		
-		public static const DEBUG:Boolean = true;
+		public static const DEBUG:Boolean = false;
+		public static const MODE:String = 'infantil';
+		// public static const MODE:String = 'adulto';
 		
 		private const WEBSERVERPORT:uint = 8080;
 		private const WEBSOCKETPORT:uint = 8087;
@@ -48,12 +52,15 @@ package {
 		private var _currentID:int;
 		private var _arduino:SerproxyArduino;
 		
+		private var _bg:Loader;
+		
 		
 		public function Main():void {
 			stage.scaleMode = StageScaleMode.NO_SCALE;
 			stage.align = StageAlign.TOP_LEFT;
 			stage.addEventListener(Event.DEACTIVATE, deactivate);
 			if (!Main.DEBUG) stage.displayState = StageDisplayState.FULL_SCREEN_INTERACTIVE;
+			stage.addEventListener(Event.RESIZE, onResize);
 			
 			// config
 			Main.config = new PersistentData('remotecontrol', 'config');
@@ -111,21 +118,32 @@ package {
 			Main.content.graphics.beginFill(0xCCCCCC);
 			Main.content.graphics.drawRect(0, 0, this.DESIGNWIDTH, this.DESIGNHEIGHT);
 			Main.content.graphics.endFill();
-			Main.content.width = stage.stageWidth;
-			Main.content.scaleY = Main.content.scaleX;
-			if (Main.content.height > stage.stageHeight) {
-				Main.content.height = stage.stageHeight;
-				Main.content.scaleX = Main.content.scaleY;
-			}
-			Main.content.x = (stage.stageWidth - Main.content.width) / 2;
-			Main.content.y = (stage.stageHeight - Main.content.height) / 2;
 			this.addChild(Main.content);
+			this.onResize(null);
+			
+			// background
+			this._bg = new Loader();
+			if (Main.MODE == 'infantil') {
+				this._bg.load(new URLRequest('CreditosInfantil.swf'));
+			} else {
+				this._bg.load(new URLRequest('CreditosAdulto.swf'));
+			}
+			Main.content.addChild(this._bg);
 			
 			// show connection address using qr code
 			this._qrCode = new QRCodeDisplay();
 			Main.content.addChild(this._qrCode);
-			//this._qrCode.setCode(this._webServer.serverAddress(this._tcpServer.serverActiveIPv4[0]) + '/abelhas/abelha.html');
-			this._qrCode.setCode(this._webServer.serverAddress(this._tcpServer.serverActiveIPv4[0]) + '/paradoxos/paradoxo.html');
+			if (Main.MODE == 'infantil') {
+				this._qrCode.setCode(this._webServer.serverAddress(this._tcpServer.serverActiveIPv4[0]) + '/abelhas/abelha.html');
+				this._qrCode.scaleX = this._qrCode.scaleY = 1.2;
+				this._qrCode.x = 80;
+				this._qrCode.y = 440;
+			} else {
+				this._qrCode.setCode(this._webServer.serverAddress(this._tcpServer.serverActiveIPv4[0]) + '/paradoxos/paradoxo.html');
+				this._qrCode.scaleX = this._qrCode.scaleY = 1.2;
+				this._qrCode.x = 1005;
+				this._qrCode.y = 80;
+			}
 			trace(this._qrCode.code);
 		}
 		
@@ -388,6 +406,19 @@ package {
 						this._tcpServer.sendJSONToClient( { 'ac':'dentedeleao', 'posicao': 3 }, this._tablets[3].socket);
 					}
 					break;
+			}
+		}
+		
+		private function onResize(evt:Event):void {
+			if ((Main.content != null) && (this.stage != null)) {
+				Main.content.width = stage.stageWidth;
+				Main.content.scaleY = Main.content.scaleX;
+				if (Main.content.height > stage.stageHeight) {
+					Main.content.height = stage.stageHeight;
+					Main.content.scaleX = Main.content.scaleY;
+				}
+				Main.content.x = (stage.stageWidth - Main.content.width) / 2;
+				Main.content.y = (stage.stageHeight - Main.content.height) / 2;
 			}
 		}
 	}
